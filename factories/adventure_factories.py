@@ -1,32 +1,25 @@
 import random
-from factories.character_interface import CreateCharacterInterface
+from interfaces.character_interface import CreateCharacterInterface
+from interfaces.race_interface import RaceStrategy
 from models.character import Character
 from models.enums import Dices, Attributes
 
 class InteractiveDistributionMixin:
-    def _DistribuirPontosInterativo(self, character: Character, available_values: list):
-        print("\n🎯 DISTRIBUIÇÃO LIVRE DE ATRIBUTOS")
-        print("=" * 40)
-        print("Escolha quanto de cada valor disponível alocar em cada atributo.")
-        print("Digite 0 para pular um atributo.")
-        print()
-        
+    
+    def _distribute_points_interactive(self, character: Character, points_pool: list):
         attributes_info = [
-            (Attributes.STRENGTH, "💪 Força"),
-            (Attributes.DEXTERY, "🏃 Destreza"),
-            (Attributes.CONSTITUTION, "🛡️  Constituição"),
-            (Attributes.INTELLIGENCE, "🧠 Inteligência"),
-            (Attributes.WISDOM, "🙏 Sabedoria"),
-            (Attributes.CHARISMA, "😊 Carisma")
+            (Attributes.STRENGTH, "Força"),
+            (Attributes.DEXTERY, "Destreza"),
+            (Attributes.CONSTITUTION, "Constituição"),
+            (Attributes.INTELLIGENCE, "Inteligência"),
+            (Attributes.WISDOM, "Sabedoria"),
+            (Attributes.CHARISMA, "Carisma")
         ]
-        
-        points_pool = available_values.copy()
-        points_pool.sort(reverse=True)
         
         for attribute, display_name in attributes_info:
             if not points_pool:
                 print(f"\n❌ Sem pontos restantes para {display_name}")
-                character.AddAttributePoints(attribute, 0)
+                character.add_attribute_points(attribute, 0)
                 continue
                 
             print(f"\n📋 Distribuindo para {display_name}")
@@ -47,12 +40,12 @@ class InteractiveDistributionMixin:
                         points_to_assign = int(points_input)
                     
                     if points_to_assign == 0:
-                        character.AddAttributePoints(attribute, 0)
+                        character.add_attribute_points(attribute, 0)
                         print(f"   ⏭️  Pulando {display_name}")
                         break
                     elif points_to_assign in points_pool:
                         points_pool.remove(points_to_assign)
-                        character.AddAttributePoints(attribute, points_to_assign)
+                        character.add_attribute_points(attribute, points_to_assign)
                         print(f"   ✅ {points_to_assign} pontos atribuídos a {display_name}")
                         break
                     else:
@@ -69,13 +62,12 @@ class InteractiveDistributionMixin:
         print("\n📊 RESUMO DA DISTRIBUIÇÃO:")
         print("-" * 30)
 
-class ClassicoCharacterFactory(CreateCharacterInterface):
-    def Create(self, name: str) -> Character:
-        """Cria um novo personagem clássico"""
-        character = Character(name)
+class ClassicFactory(CreateCharacterInterface):
+    def create(self, name: str, race: RaceStrategy) -> Character:
+        character = Character(name, race)
         return character
     
-    def RollAttributes(self, character: Character) -> Character:
+    def roll_attributes(self, character: Character) -> Character:
         print(f"🎲 Criando personagem CLÁSSICO: {character.name}")
         print("   Rolando 3d6 em ordem fixa...")
         
@@ -91,17 +83,17 @@ class ClassicoCharacterFactory(CreateCharacterInterface):
         for attribute in attribute_order:
             rolls = [random.randint(1, Dices.D6.value) for _ in range(3)]
             roll_result = sum(rolls)
-            character.AddAttributePoints(attribute, roll_result)
+            character.add_attribute_points(attribute, roll_result)
             print(f"  {attribute.name}: {rolls} = {roll_result}")
         
         return character
 
-class AventureiroCharacterFactory(CreateCharacterInterface, InteractiveDistributionMixin):
-    def Create(self, name: str) -> Character:
-        character = Character(name)
+class AdventurerFactory(CreateCharacterInterface, InteractiveDistributionMixin):
+    def create(self, name: str, race: RaceStrategy) -> Character:
+        character = Character(name, race)
         return character
     
-    def RollAttributes(self, character: Character) -> Character:
+    def roll_attributes(self, character: Character) -> Character:
         print(f"⚔️ Criando personagem AVENTUREIRO: {character.name}")
         print("   Rolando 3d6 seis vezes para distribuição livre...")
         
@@ -115,18 +107,18 @@ class AventureiroCharacterFactory(CreateCharacterInterface, InteractiveDistribut
         print(f"\n   Valores disponíveis: {sorted(rolled_values, reverse=True)}")
         print("   Total de pontos: {}".format(sum(rolled_values)))
         
-        self._DistribuirPontosInterativo(character, rolled_values)
+        self._distribute_points_interactive(character, rolled_values)
         
         return character
 
-class HeroicoCharacterFactory(CreateCharacterInterface, InteractiveDistributionMixin):
-    def Create(self, name: str) -> Character:
-        character = Character(name)
+class HeroicFactory(CreateCharacterInterface, InteractiveDistributionMixin):
+    def create(self, name: str, race: RaceStrategy) -> Character:
+        character = Character(name, race)
         return character
     
-    def RollAttributes(self, character: Character) -> Character:
+    def roll_attributes(self, character: Character) -> Character:
         print(f"🏆 Criando personagem HEROICO: {character.name}")
-        print("   Rolando 4d6 (elimina menor) seis vezes para distribuição livre...")
+        print("   Rolando 4d6 elimina menor seis vezes para distribuição livre...")
         
         rolled_values = []
         for i in range(6):
@@ -134,11 +126,11 @@ class HeroicoCharacterFactory(CreateCharacterInterface, InteractiveDistributionM
             rolls.sort(reverse=True)
             roll_result = sum(rolls[:3])
             rolled_values.append(roll_result)
-            print(f"  Rolagem {i+1}: {rolls} -> {roll_result} (eliminou {rolls[3]})")
+            print(f"  Rolagem {i+1}: {rolls} (elimina {rolls[3]}) = {roll_result}")
         
         print(f"\n   Valores disponíveis: {sorted(rolled_values, reverse=True)}")
         print("   Total de pontos: {}".format(sum(rolled_values)))
         
-        self._DistribuirPontosInterativo(character, rolled_values)
+        self._distribute_points_interactive(character, rolled_values)
         
         return character

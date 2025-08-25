@@ -17,7 +17,45 @@ class BaseStatus(Enum):
     HEALTH = 100
     MANA = 20
 
-class TiposDeAventura(Enum):
-    CLASSICO = "classico"
-    AVENTUREIRO = "aventureiro"
-    HEROICO = "heroico"
+class AdventureTypes(Enum):
+    CLASSIC = "classico"
+    ADVENTURER = "aventureiro"
+    HEROIC = "heroico"
+
+class Alignment(Enum):
+    ORDEM = "ORDEM"
+    NEUTRAL_GOOD = "Neutro e Bom"
+    CHAOTIC_GOOD = "Caótico e Bom"
+    LAWFUL_NEUTRAL = "Leal e Neutro"
+    NEUTRAL = "Neutro"
+    CHAOTIC_NEUTRAL = "Caótico e Neutro"
+    LAWFUL_EVIL = "Leal e Mau"
+    NEUTRAL_EVIL = "Neutro e Mau"
+    CHAOTIC_EVIL = "Caótico e Mau"
+    ANY = "Qualquer"
+
+class Darkvision(Enum):
+    NONE = 0
+    MODERATE = 9
+    GOOD = 18
+
+class PassiveTypes(Enum):
+    ATTRIBUTES_MODIFIER = "Attributes Modifier"
+    ACTIONS_MODIFIER = "Actions Modifier"
+    DEFENSE_MODIFIER = "Defense Modifier"
+
+class PassiveOrigin(Enum):
+    RACE = "Race"
+    CLASS = "Class"
+    BACKGROUND = "Background"
+    ITEM = "Item"
+    SPELL = "Spell"
+
+class PassiveTime(Enum):
+    PERMANENT = 0
+
+class Races(Enum):
+    HUMAN = "Humano"
+    ELF = "Elfo"
+    DWARF = "Anão"
+    HALFLING = "Halfling"

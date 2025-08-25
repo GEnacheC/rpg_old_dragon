@@ -3,19 +3,20 @@ from models.enums import BaseStatus
 class Player:
     def __init__(self, name):
         self.name = name
-        self.health = BaseStatus.HEALTH.value
-        self.mana = BaseStatus.MANA.value
+        self.health = 100
+        self.mana = 20
 
-    def Heal(self, heal):
+    def heal(self, heal):
         self.health += heal
-    
-    def Damage(self, damage):
+
+    def damage(self, damage):
         self.health -= damage
 
-    def CastSkill(self, mana):
-        if mana > self.mana:
-            raise ValueError("Sem Mana suficiente para usar a skill")
-        self.mana -= mana
+    def cast_skill(self, mana):
+        if self.mana >= mana:
+            self.mana -= mana
+            return True
+        return False
 
-    def ManaRegen(self, regen):
+    def mana_regen(self, regen):
         self.mana += regen

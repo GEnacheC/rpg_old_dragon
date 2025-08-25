@@ -6,7 +6,7 @@ def main():
     print()
     
     game = GameSystem()
-    game.Start()
+    game.start()
 
 if __name__ == "__main__":
     main()
