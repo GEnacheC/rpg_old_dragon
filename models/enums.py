@@ -59,3 +59,8 @@ class Races(Enum):
     ELF = "Elfo"
     DWARF = "Anão"
     HALFLING = "Halfling"
+
+class Classes(Enum):
+    WARRIOR = "Guerreiro"
+    MAGE = "Mago"
+    THIEF = "Ladrão"

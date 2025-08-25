@@ -1,14 +1,16 @@
 from typing import List
 from interfaces.race_interface import RaceStrategy
+from interfaces.class_interface import ClassStrategy
 from models.passives.Passive import Passive
 from models.player import Player
 from models.enums import Attributes
 
 class Character(Player):
 
-    def __init__(self, name, race: RaceStrategy):
+    def __init__(self, name, race: RaceStrategy, character_class: ClassStrategy):
         super().__init__(name)
         self.race = race
+        self.character_class = character_class
         self.passive_abilities = []
         self.reset_attributes()
     

@@ -1,6 +1,7 @@
 import random
 from interfaces.character_interface import CreateCharacterInterface
 from interfaces.race_interface import RaceStrategy
+from interfaces.class_interface import ClassStrategy
 from models.character import Character
 from models.enums import Dices, Attributes
 
@@ -63,8 +64,8 @@ class InteractiveDistributionMixin:
         print("-" * 30)
 
 class ClassicFactory(CreateCharacterInterface):
-    def create(self, name: str, race: RaceStrategy) -> Character:
-        character = Character(name, race)
+    def create(self, name: str, race: RaceStrategy, character_class: ClassStrategy) -> Character:
+        character = Character(name, race, character_class)
         return character
     
     def roll_attributes(self, character: Character) -> Character:
@@ -89,8 +90,8 @@ class ClassicFactory(CreateCharacterInterface):
         return character
 
 class AdventurerFactory(CreateCharacterInterface, InteractiveDistributionMixin):
-    def create(self, name: str, race: RaceStrategy) -> Character:
-        character = Character(name, race)
+    def create(self, name: str, race: RaceStrategy, character_class: ClassStrategy) -> Character:
+        character = Character(name, race, character_class)
         return character
     
     def roll_attributes(self, character: Character) -> Character:
@@ -112,8 +113,8 @@ class AdventurerFactory(CreateCharacterInterface, InteractiveDistributionMixin):
         return character
 
 class HeroicFactory(CreateCharacterInterface, InteractiveDistributionMixin):
-    def create(self, name: str, race: RaceStrategy) -> Character:
-        character = Character(name, race)
+    def create(self, name: str, race: RaceStrategy, character_class: ClassStrategy) -> Character:
+        character = Character(name, race, character_class)
         return character
     
     def roll_attributes(self, character: Character) -> Character:

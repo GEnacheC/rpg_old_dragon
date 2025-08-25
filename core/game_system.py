@@ -1,7 +1,8 @@
 from models.character import Character
 from factories.character_factory import CreateCharacterFactory
 from factories.race_factory import RaceFactory
-from models.enums import AdventureTypes, Races
+from factories.class_factory import ClassFactory
+from models.enums import AdventureTypes, Races, Classes
 
 class GameSystem:
     def __init__(self):
@@ -63,6 +64,12 @@ class GameSystem:
 
         race_instance = RaceFactory.get_race(race)
 
+        character_class = self.select_class()
+        if character_class is None:
+            return
+
+        class_instance = ClassFactory.get_class(character_class)
+
         adventure_type = self.select_adventure_type()
         if adventure_type is None:
             return
@@ -70,8 +77,9 @@ class GameSystem:
         print(f"\n🎲 Criando personagem '{name}'...")
         print(f"🎯 Tipo de Aventura: {adventure_type.value.upper()}")
         print(f"🏃 Raça: {race.value}")
+        print(f"⚔️ Classe: {character_class.value}")
         
-        character = CreateCharacterFactory.create_character(adventure_type, name, race_instance)
+        character = CreateCharacterFactory.create_character(adventure_type, name, race_instance, class_instance)
         
         self.characters.append(character)
         
@@ -137,6 +145,44 @@ class GameSystem:
                 print(f"📝 Descrição: {race_instance.description}")
                 
                 return selected_race
+            else:
+                print("❌ Opção inválida!")
+                return None
+                
+        except ValueError:
+            print("❌ Por favor, digite um número válido!")
+            return None
+    
+    def select_class(self):
+        print("\n⚔️ Escolha a Classe do Personagem:")
+        
+        available_classes = ClassFactory.get_available_classes_enum()
+        
+        for i, class_enum in enumerate(available_classes, 1):
+            class_info = ClassFactory.get_class_info(class_enum)
+            print(f"{i}. {class_enum.value}")
+            print(f"   Dado de Vida: d{class_info['hit_dice']} | "
+                  f"Bônus de Ataque: {class_info['base_attack_bonus']}")
+            print(f"   Jogadas de Proteção: {', '.join(class_info['saving_throws'])}")
+            print(f"   Proficiências: {', '.join(class_info['proficiencies'][:3])}{'...' if len(class_info['proficiencies']) > 3 else ''}")
+            print()
+        
+        print(f"{len(available_classes) + 1}. ❌ Cancelar")
+        
+        try:
+            choice = int(input(f"\nEscolha (1-{len(available_classes) + 1}): "))
+            
+            if choice == len(available_classes) + 1:
+                return None
+            
+            if 1 <= choice <= len(available_classes):
+                selected_class = available_classes[choice - 1]
+                class_instance = ClassFactory.get_class(selected_class)
+                
+                print(f"\n✅ Classe selecionada: {class_instance.name}")
+                print(f"📝 Descrição: {class_instance.description}")
+                
+                return selected_class
             else:
                 print("❌ Opção inválida!")
                 return None
@@ -211,10 +257,34 @@ class GameSystem:
         if hasattr(character, 'race'):
             self.show_race_info(character.race)
 
+        # Informações da classe (se disponível)
+        if hasattr(character, 'character_class'):
+            self.show_class_info(character.character_class)
+
         print(f"  ✨ Habilidades Passivas:")
         
         for passive in character.passive_abilities:
             print(f"    • {passive.name}: {passive.description}")
+        
+        print()
+    
+    def show_class_info(self, class_instance, show_header=True):
+        """Show class information"""
+        if show_header:
+            print(f"\n⚔️ INFORMAÇÕES DA CLASSE: {class_instance.name}")
+            print("-" * 40)
+        
+        print(f"  📝 Descrição: {class_instance.description}")
+        print(f"  ❤️ Dado de Vida: d{class_instance.hit_dice}")
+        print(f"  ⚔️ Bônus de Ataque Base: {class_instance.base_attack_bonus}")
+        print(f"  🛡️ Jogadas de Proteção: {', '.join(class_instance.saving_throws)}")
+        print(f"  🎯 Proficiências: {', '.join(class_instance.get_proficiencies())}")
+        
+        spellcasting = class_instance.get_spellcasting()
+        print(f"  🔮 Conjuração: {spellcasting['type']}")
+        if spellcasting['type'] != "Nenhum":
+            print(f"    Habilidade: {spellcasting['spellcasting_ability']}")
+            print(f"    Feitiços Conhecidos: {spellcasting['spells_known']}")
         
         print()
     

@@ -19,7 +19,7 @@ class Dwarf(RaceStrategy):
     
     @property
     def movement(self) -> int:
-        return 7
+        return 6
     
     @property
     def darkvision(self) -> Darkvision:
